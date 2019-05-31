@@ -6,7 +6,10 @@ const paginate = require('../helpers/paginate').paginate;
 // Autoload the user with id equals to :userId
 exports.load = (req, res, next, userId) => {
 
-    models.user.findByPk(userId)
+    models.user.findByPk(userId, {
+      include: [{model: models.tip, as: 'postedTips'}]
+
+    })
     .then(user => {
         if (user) {
             req.user = user;
@@ -152,6 +155,7 @@ exports.destroy = (req, res, next) => {
         if (req.session.user && req.session.user.id === req.user.id) {
             // Close the user session
             delete req.session.user;
+
         }
 
         req.flash('success', 'User deleted successfully.');

@@ -4,13 +4,14 @@ const {models} = require("../models");
 
 const paginate = require('../helpers/paginate').paginate;
 
-// Autoload el quiz asociado a :quizId
+
 exports.load = (req, res, next, quizId) => {
 
     models.quiz.findByPk(quizId, {
-        include: [
-            models.tip,
-            {model: models.user, as: 'author'}
+        include: [{model: models.tip,
+            include: [{model: models.user, as: 'author'}],
+        },
+        {model: models.user, as: 'author'}
         ]
     })
     .then(quiz => {
@@ -23,7 +24,6 @@ exports.load = (req, res, next, quizId) => {
     })
     .catch(error => next(error));
 };
-
 
 // MW that allows actions only if the user logged in is admin or is the author of the quiz.
 exports.adminOrAuthorRequired = (req, res, next) => {
